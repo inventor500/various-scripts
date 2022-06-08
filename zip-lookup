@@ -1,0 +1,35 @@
+#!/usr/bin/ruby
+# Usage: zip-lookup <zip code>
+# The Postal Service website states that "Users may view and download material from this site only for the following purposes: (a) for personal, non-commercial home use; (b) where the materials clearly state that these materials may be copied and reproduced according to the terms stated in those particular pages; or (c) with the express written permission of the Postal Service."
+require 'net/https'
+require 'json'
+
+def request_zip(zip)
+  headers = {'DNT':'1',
+             'Referer':'https://tools.usps.com/zip-code-lookup.htm?citybyzipcode',
+             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101 Firefox/91.0',
+             'Origin': 'https://tools.usps.com',
+             'X-Requested-With': 'XMLHttpRequest'
+            }
+  request = Net::HTTP::Post.new('/tools/app/ziplookup/cityByZip',headers)
+  http = Net::HTTP.new('tools.usps.com',443)
+  http.use_ssl = true
+  request.body = 'zip=' + zip.to_s
+  return http.request(request)
+end
+
+def eval_zip_response(returned_value)
+  parsed = JSON.parse(returned_value.body)
+  if (parsed['defaultCity'] != nil)
+    puts "Searched Zip:\t" + parsed['zip5']
+    puts "City:\t\t\t" + parsed['defaultCity']
+    puts "State:\t\t\t" + parsed['defaultState']
+    return parsed['defaultCity'] + ', ' + parsed['defaultState']
+  else
+    puts "No result found."
+  end
+end
+
+if (ARGV.length == 1)
+  eval_zip_response(request_zip(ARGV[0]))
+end
