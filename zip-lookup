@@ -1,13 +1,13 @@
 #!/usr/bin/ruby
 # Usage: zip-lookup <zip code>
-# The Postal Service website states that "Users may view and download material from this site only for the following purposes: (a) for personal, non-commercial home use; (b) where the materials clearly state that these materials may be copied and reproduced according to the terms stated in those particular pages; or (c) with the express written permission of the Postal Service."
+# The USPS website states that "Users may view and download material from this site only for the following purposes: (a) for personal, non-commercial home use; (b) where the materials clearly state that these materials may be copied and reproduced according to the terms stated in those particular pages; or (c) with the express written permission of the Postal Service."
 require 'net/https'
 require 'json'
 
 def request_zip(zip)
-  headers = {'DNT':'1',
+  headers = {'DNT':'1', # Probably not respected
              'Referer':'https://tools.usps.com/zip-code-lookup.htm?citybyzipcode',
-             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101 Firefox/91.0',
+             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101 Firefox/91.0', # Returns 403 redirect to "Page not found" if unset
              'Origin': 'https://tools.usps.com',
              'X-Requested-With': 'XMLHttpRequest'
             }
@@ -21,10 +21,16 @@ end
 def eval_zip_response(returned_value)
   parsed = JSON.parse(returned_value.body)
   if (parsed['defaultCity'] != nil)
+    puts "\e[1;37mDefault\e[0;0m"
     puts "Searched Zip:\t" + parsed['zip5']
-    puts "City:\t\t\t" + parsed['defaultCity']
-    puts "State:\t\t\t" + parsed['defaultState']
-    return parsed['defaultCity'] + ', ' + parsed['defaultState']
+    puts "City:\t\t" + parsed['defaultCity']
+    puts "State:\t\t" + parsed['defaultState']
+    puts ""
+    puts "\e[1;37mOther\e[0;0m"
+    for city in parsed['citiesList']
+      puts city['city'] + ", " + city['state']
+    end
+    return parsed['defaultCity'] + ', ' + parsed['defaultState'][0]
   else
     puts "No result found."
   end
