@@ -8,7 +8,7 @@
 (defpackage :zip-from-city
   (:use cl))
 
-(require 'dexador)
+(in-package :zip-from-city)
 
 (defun send-request (city state)
   "Send a request with city and state to the USPS website"
