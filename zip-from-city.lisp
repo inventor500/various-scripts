@@ -1,5 +1,7 @@
 #!/usr/bin/sbcl --script
 
+;; Usage: zip-from-city <city> <state>
+
 (load "~/quicklisp/setup.lisp")
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
