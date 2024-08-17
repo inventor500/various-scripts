@@ -15,7 +15,7 @@ $ ./passwd-audit
 
 ## Q&A
 
-- Why C++?
+- Why C++?  
 It has been a while since I wrote anything in C++.
-- Why not just use `grep` if you actually need to do this?
+- Why not just use `grep` if you actually need to do this?  
 This short program is mostly just to reinforce my own learning, and not for any real use.
