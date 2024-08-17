@@ -1,2 +1,7 @@
 *~
 *.fasl
+speedtest-wrapper
+\#*
+.\#
+passwd-audit/passwd-audit
+*.o
