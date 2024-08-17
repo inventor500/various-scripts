@@ -49,14 +49,26 @@ std::ostream& operator<<(std::ostream& os, PasswdLine& line) {
 PasswdState PasswdLine::getPasswdState() {
 	if (this->password == "x") {
 		return PasswdState::IN_SHADOW;
-	} else if (this->password == "" || this->password[0] == '!' || this->password[0] == '*') {
+	} else if (password == "" || password[0] == '!' || password[0] == '*') {
 		return PasswdState::DISABLED;
 	} else {
 		return PasswdState::IN_PASSWD;
 	}
 }
 
-std::string to_string(const PasswdState& state) {
+AccountType PasswdLine::checkAccountType() {
+	if (uid < 100) {
+		return AccountType::SYSTEM_STATIC;
+	} else if (uid < 500) {
+		return AccountType::SYSTEM_DYNAMIC;
+	} else if (uid >= 1000) {
+		return AccountType::USER;
+	} else {
+		return AccountType::UNDEFINED;
+	}
+}
+
+std::string to_string(PasswdState state) {
 	switch (state) {
 	case PasswdState::IN_PASSWD:
 		return "In /etc/passwd";
@@ -65,10 +77,31 @@ std::string to_string(const PasswdState& state) {
 	case PasswdState::DISABLED:
 		return "Password login disabled";
 	}
+	// This should never happen...
 	throw std::invalid_argument("No such password sate " + std::to_string((int)state));
 }
 
 std::ostream& operator<<(std::ostream& os, const PasswdState& state) {
 	os << to_string(state);
+	return os;
+}
+
+std::string to_string(AccountType state) {
+	switch (state) {
+	case AccountType::SYSTEM_STATIC:
+		return "System Static";
+	case AccountType::SYSTEM_DYNAMIC:
+		return "System Dynamic";
+	case AccountType::USER:
+		return "User";
+	case AccountType::UNDEFINED:
+		return "Undefined";
+	}
+	// This should never happen...
+	throw std::invalid_argument("No such account type " + std::to_string((int)state));
+}
+
+std::ostream& operator<<(std::ostream& os, const AccountType& type) {
+	os << to_string(type);
 	return os;
 }
