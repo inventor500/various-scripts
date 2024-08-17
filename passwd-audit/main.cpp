@@ -2,7 +2,7 @@
 #include <filesystem>
 #include <fstream>
 #include <format>
-#include "passwd.h"
+#include "passwd.hpp"
 namespace fs = std::filesystem;
 
 int main(void) {

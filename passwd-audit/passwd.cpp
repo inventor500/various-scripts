@@ -1,5 +1,5 @@
-#include "passwd.h"
 #include <string>
+#include "passwd.hpp"
 
 std::istream& operator>>(std::istream& is, PasswdLine& line) {
 	std::string _line;
