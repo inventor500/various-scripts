@@ -1,7 +1,10 @@
+#include <algorithm>
 #include <string>
+#include <sstream> // Requored to compile on Mac OS
 #include "passwd.hpp"
 
 std::istream& operator>>(std::istream& is, PasswdLine& line) {
+	const char comment = '#';
 	std::string _line;
 	const char d = ':';
 	std::getline(is, _line);
@@ -9,16 +12,26 @@ std::istream& operator>>(std::istream& is, PasswdLine& line) {
 		return is;
 	}
 	std::istringstream in{_line};
-	// Get te username
+	// Remove any comments
+	std::string temp;
+	std::getline(in, temp, comment);
+	if (temp == "") { // Line is only a comment
+		return is;
+	}
+	if (std::ranges::count(temp, ':') != 6) { // Line is malformed
+		return is;
+	}
+	_line = temp;
+	in = std::istringstream(_line);
+	// Get the username
 	std::getline(in, line.username, d);
 	// Get the password
 	std::getline(in, line.password, d);
 	// Get the uid
-	std::string temp;
 	std::getline(in, temp, d);		
 	try {
 		line.uid = std::stoi(temp);
-	} catch (std::invalid_argument e) {
+	} catch (const std::invalid_argument &e) {
 		std::cerr << "Unable to parse uid for user '" << line.username << '\'' << std::endl
 				  << "Line: " << _line << std::endl;
 	}
@@ -26,7 +39,7 @@ std::istream& operator>>(std::istream& is, PasswdLine& line) {
 	std::getline(in, temp, d);
 	try {
 		line.gid = std::stoi(temp);
-	} catch (std::invalid_argument e) {
+	} catch (const std::invalid_argument &e) {
 		std::cerr << "Unable to parse gid for user '" << line.username << '\'' << std::endl
 				  << "Line: " << _line << std::endl;
 	}
